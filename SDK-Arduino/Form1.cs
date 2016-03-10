@@ -65,7 +65,8 @@ namespace SDK_Arduino
                         button3.Enabled = false;
                         button4.Enabled = true;
                         //textBox2.BeginInvoke(new InvokeDelegate(text_Open));
-                        textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connected to " + comboBox1.Text + " @ " + comboBox2.Text + " baud ****\n" });
+                        textBox2.BeginInvoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connected to " + comboBox1.Text + " @ " + comboBox2.Text + " baud ****\n" });
+                        //textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connected to " + comboBox1.Text + " @ " + comboBox2.Text + " baud ****\n" });
                     }
                 }
             }
@@ -77,17 +78,21 @@ namespace SDK_Arduino
 
         private void button4_Click(object sender, EventArgs e) // Close Connection
         {
-            serialPort1.Close();
-            progressBar1.Value = 0;
-            if (serialPort1.IsOpen == false)
+            if (serialPort1.IsOpen)
             {
-                button1.Enabled = false;
-                textBox1.Enabled = false;
-                button3.Enabled = true;
-                button4.Enabled = false;
-                //textBox2.BeginInvoke(new InvokeDelegate(text_Close));
-                textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connection closed ****\n" });
-            }
+                serialPort1.Close();
+                progressBar1.Value = 0;
+                if (serialPort1.IsOpen == false)
+                {
+                    button1.Enabled = false;
+                    textBox1.Enabled = false;
+                    button3.Enabled = true;
+                    button4.Enabled = false;
+                    //textBox2.BeginInvoke(new InvokeDelegate(text_Close));
+                    textBox2.BeginInvoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connection closed ****\n" });
+                    //textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connection closed ****\n" });
+                }
+            }            
         }
 
         private void button1_Click(object sender, EventArgs e) // Send code with Send button
@@ -101,7 +106,8 @@ namespace SDK_Arduino
             SerialPort sp = (SerialPort)sender;
             string indata = sp.ReadExisting();
             //textBox2.BeginInvoke(new InvokeDelegate(text_DataReceived));
-            textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] {indata});
+            textBox2.BeginInvoke(new Action<string>(textBox2.AppendText), new object[] { indata });
+            //textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] {indata});
         }
 
         private void enterkey(object sender, KeyEventArgs e) // Send code with Enter Key
@@ -110,9 +116,15 @@ namespace SDK_Arduino
             {
                 serialPort1.WriteLine(textBox1.Text);
                 //textBox2.BeginInvoke(new InvokeDelegate(text_EnterKey));
-                textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { ">>>>" + textBox1.Text + "\n" });
+                textBox2.BeginInvoke(new Action<string>(textBox2.AppendText), new object[] { ">>>>" + textBox1.Text + "\n" });
+                //textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { ">>>>" + textBox1.Text + "\n" });
                 textBox1.Text = "";
             }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (serialPort1.IsOpen) serialPort1.Close();
         }
     }
 }
