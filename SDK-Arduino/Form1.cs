@@ -54,20 +54,20 @@ namespace SDK_Arduino
                     textBox2.Text = "Please select port settings\n";
                 else
                 {
+                    if (serialPort1 != null && serialPort1.IsOpen)
+                        serialPort1.Close();
+
                     serialPort1.PortName = comboBox1.Text;
                     serialPort1.BaudRate = Convert.ToInt32(comboBox2.Text);
                     serialPort1.Open();
-                    if (serialPort1.IsOpen)
-                    {
-                        progressBar1.Value = 100;
-                        button1.Enabled = true;
-                        textBox1.Enabled = true;
-                        button3.Enabled = false;
-                        button4.Enabled = true;
-                        //textBox2.BeginInvoke(new InvokeDelegate(text_Open));
-                        textBox2.BeginInvoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connected to " + comboBox1.Text + " @ " + comboBox2.Text + " baud ****\n" });
-                        //textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connected to " + comboBox1.Text + " @ " + comboBox2.Text + " baud ****\n" });
-                    }
+                    progressBar1.Value = 100;
+                    button1.Enabled = true;
+                    textBox1.Enabled = true;
+                    button3.Enabled = false;
+                    button4.Enabled = true;
+                    //textBox2.BeginInvoke(new InvokeDelegate(text_Open));
+                    textBox2.BeginInvoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connected to " + comboBox1.Text + " @ " + comboBox2.Text + " baud ****\n" });
+                    //textBox2.Invoke(new Action<string>(textBox2.AppendText), new object[] { "**** Connected to " + comboBox1.Text + " @ " + comboBox2.Text + " baud ****\n" });
                 }
             }
             catch (UnauthorizedAccessException)
